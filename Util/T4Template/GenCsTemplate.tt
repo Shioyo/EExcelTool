@@ -1,0 +1,58 @@
+<#@ template language="C#" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Security.Policy" #>
+<#@ parameter name="className" type="string"#>
+<#@ parameter name="propertyNameString" type="string"#>
+<#@ parameter name="propertyTypeString" type="string"#>
+<#@ parameter name="genFileTime" type="string"#>
+<#@ import namespace="System.Linq" #>
+<#
+    var nameSs = (propertyNameString as string).Split(';');
+    var typeSs = (propertyTypeString as string).Split(';');
+    List<string> propertyNames = nameSs.ToList();
+    List<string> propertyTypes = typeSs.ToList();
+#>
+///程序生成文件,请勿自行更改!!!
+///文件生成时间-<#=genFileTime#>
+using System.Collections.Generic;
+public class <#=className #>
+{
+<#for (int i = 0; i < propertyNames.Count; i++)
+    {
+        string propertyName = propertyNames[i];
+        string propertyType = propertyTypes[i];#>
+    public <#=propertyType #> <#=propertyName #> {get;set;}
+<#}#>
+    public <#=className #>(<#for (int i = 0; i < propertyNames.Count; i++)
+    {
+        string propertyName = propertyNames[i];
+        string propertyType = propertyTypes[i];
+        #><#=propertyType #> <#=propertyName #> <#
+        if (i != propertyNames.Count - 1){#>,<#}#>
+<#}#>)
+    {
+<#for (int i = 0; i < propertyNames.Count; i++)
+    {
+        string propertyName = propertyNames[i];#>
+        this.<#=propertyName #> = <#=propertyName #>;
+<#}#>
+    }
+
+    public <#=className #>(){
+    
+    }
+
+    /*public List<<#=className #>> GetList(){
+        var listRow = ExcelReader.ReadList("<#=className#>");
+        List<<#=className#>> returnList=new();
+        for(int i=0;i<listRow.Count();i++){
+            <#=className#> item = new <#=className#>();
+<#for (int j=0;j<propertyNames.Count;j++)
+    {#>
+            item.<#=propertyNames[j]#> = listRow[i][<#=j#>].GetValue<<#=propertyTypes[j]#>>(); 
+<#}#>
+        }
+        return null;
+    }*/
+}
