@@ -11,6 +11,15 @@ namespace Util
         {
             List<string> paths = Directory.GetFiles(excelDirectory).Where((s) =>
             {
+                if (Directory.Exists(s))
+                {
+                    return false;
+                }
+                if (s.EndsWith(".meta"))
+                {
+                    return false;
+                }
+                
                 string fileName = Path.GetFileNameWithoutExtension(s);
                 if (fileName.StartsWith("~"))
                 {
