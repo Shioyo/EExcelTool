@@ -88,7 +88,7 @@ namespace Util
         }
 
         public static void GetFileNameAndFileType(ExcelWorksheet workSheet, List<CsGenerator.ExcelCell> fileNames,
-            List<CsGenerator.ExcelCell> fileTypes)
+            List<CsGenerator.ExcelCell> fileTypes,List<CsGenerator.ExcelCell> orNames,List<CsGenerator.ExcelCell> orTypes)
         {
             // 获取行数和列数
             int rowCount = workSheet.Dimension.Rows;
@@ -98,12 +98,21 @@ namespace Util
                 //这一行的是字段名
                 string propertyName = workSheet.Cells[1, col].Value.ToString();
                 string propertyType = workSheet.Cells[3, col].Value.ToString();
-
+                
+                orNames.Add(new CsGenerator.ExcelCell(1, col, workSheet.Cells[1, col].Value.ToString()));
+                orTypes.Add(new CsGenerator.ExcelCell(1, col, workSheet.Cells[3, col].Value.ToString()));
                 if (propertyName.EndsWith("@pass") || propertyName.EndsWith("@pm"))
                 {
                     return;
                 }
 
+                if (propertyName.Contains("@enum"))
+                {
+                    string[] ss= propertyName.Split('@');
+                    string name = ss[0];
+                    propertyName = name;
+                }
+                
                 fileNames.Add(new CsGenerator.ExcelCell(1, col, propertyName));
                 fileTypes.Add(new CsGenerator.ExcelCell(3, col, propertyType));
             }
@@ -111,6 +120,7 @@ namespace Util
 
         private ExcelUtil()
         {
+            
         }
     }
 }

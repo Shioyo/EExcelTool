@@ -19,6 +19,20 @@
       <EmbeddedResource Include="T4Template\GenCsTemplate.tt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
+      <None Remove="T4Template\GenCsEnumTemplate.tt" />
+      <EmbeddedResource Include="T4Template\GenCsEnumTemplate.tt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>GenCsEnumTemplate.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="T4Template\GenCsEnumTemplate.cs">
+        <AutoGen>True</AutoGen>
+        <DesignTime>True</DesignTime>
+        <DependentUpon>GenCsEnumTemplate.tt</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

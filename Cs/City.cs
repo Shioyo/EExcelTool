@@ -1,5 +1,5 @@
 ///程序生成文件,请勿自行更改!!!
-///文件生成时间-2024/10/22 9:57:20
+///文件生成时间-2024/10/26 9:32:28
 using System.Collections.Generic;
 public class City
 {
@@ -18,17 +18,4 @@ public class City
     public City(){
     
     }
-
-    /*public List<City> GetList(){
-        var listRow = ExcelReader.ReadList("City");
-        List<City> returnList=new();
-        for(int i=0;i<listRow.Count();i++){
-            City item = new City();
-            item.ID = listRow[i][0].GetValue<string>(); 
-            item.CityName = listRow[i][1].GetValue<string>(); 
-            item.CityPop = listRow[i][2].GetValue<int>(); 
-            item.CityType = listRow[i][3].GetValue<int>(); 
-        }
-        return null;
-    }*/
-}}
+}

@@ -42,17 +42,4 @@ public class <#=className #>
     public <#=className #>(){
     
     }
-
-    /*public List<<#=className #>> GetList(){
-        var listRow = ExcelReader.ReadList("<#=className#>");
-        List<<#=className#>> returnList=new();
-        for(int i=0;i<listRow.Count();i++){
-            <#=className#> item = new <#=className#>();
-<#for (int j=0;j<propertyNames.Count;j++)
-    {#>
-            item.<#=propertyNames[j]#> = listRow[i][<#=j#>].GetValue<<#=propertyTypes[j]#>>(); 
-<#}#>
-        }
-        return null;
-    }*/
 }

@@ -9,6 +9,7 @@ namespace Util
         private readonly string excelDirectory;
         private readonly string outputDirectory;
         private readonly string t4FileContent;
+        private readonly string t4EnumFileContent;
 
         public CsGenerator(string excelDirectory, string outputDirectory)
         {
@@ -25,6 +26,16 @@ namespace Util
                 {
                     // 读取嵌入资源中的内容
                     t4FileContent = reader.ReadToEnd();
+                }
+            }
+            resourceName = "Util.T4Template.GenCsEnumTemplate.tt";
+            // 使用 ManifestResourceStream 读取嵌入资源
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    // 读取嵌入资源中的内容
+                    t4EnumFileContent = reader.ReadToEnd();
                 }
             }
         }
@@ -50,12 +61,15 @@ namespace Util
                 //获取到需要处理的字段以及对应的类型
                 List<ExcelCell> propertyNames = new List<ExcelCell>();
                 List<ExcelCell> propertyTypes = new List<ExcelCell>();
-                ExcelUtil.GetFileNameAndFileType(workSheet, propertyNames, propertyTypes);
+                List<ExcelCell> orNames = new List<ExcelCell>();
+                List<ExcelCell> orTypes = new List<ExcelCell>();
+                ExcelUtil.GetFileNameAndFileType(workSheet, propertyNames, propertyTypes,orNames,orTypes);
                 //处理后传入T4模版作为参数
                 //准备T4文件生成
                 var session = generator.GetOrCreateSession();
                 string propNameString = string.Empty;
                 string propTypeString = string.Empty;
+                
                 for (int i = 0; i < propertyNames.Count; i++)
                 {
                     propNameString += propertyNames[i].Content;
@@ -82,13 +96,63 @@ namespace Util
 
                 string outputPath = $"{outputDirectory}\\{className}.cs";
                 var data = await generator.ProcessTemplateAsync("GenCsTemplate.tt", t4FileContent, className + ".cs");
-                using (StreamWriter streamWriter = new StreamWriter(File.OpenWrite(outputPath)))
+                
+                
+                await using (StreamWriter streamWriter = new StreamWriter(File.OpenWrite(outputPath)))
                 {
                     await streamWriter.WriteAsync(data.content);
                 }
 
                 Console.WriteLine($"{className}.cs");
                 genClassContent.Add(data.content);
+                
+                //查看Enum是否需要生成
+
+                for (int i = 0; i < orNames.Count; i++)
+                {
+                    if (orNames[i].Content.EndsWith("@enum"))
+                    {
+                        className = orTypes[i].Content;
+                        string enumNames="";
+                        for (int row = 5; row <= workSheet.Dimension.Rows; row++)
+                        {
+                            object cellValue = workSheet.Cells[row, orNames[i].Col].Value;
+                            if (cellValue!=null)
+                            {
+                                if (!string.IsNullOrEmpty(cellValue.ToString()))
+                                {
+                                    if (!string.IsNullOrEmpty(enumNames))
+                                    {
+                                        enumNames += ";";
+                                    }
+                                    enumNames+=cellValue;
+                                } 
+                            }
+                        }
+                        Dictionary<string, object> enumProperties = new Dictionary<string, object>()
+                        {
+                            { "className", className },
+                            { "enumNames", enumNames },
+                            { "genFileTime", DateTime.UtcNow.ToString() }
+                        };
+                        session.Clear();
+                        foreach (var prop in enumProperties)
+                        {
+                            session[prop.Key] = prop.Value;
+                        }
+                        outputPath = $"{outputDirectory}\\{className}.cs";
+                        data = await generator.ProcessTemplateAsync("GenCsEnumTemplate.tt", t4EnumFileContent, className + ".cs");
+                
+                
+                        await using (StreamWriter streamWriter = new StreamWriter(File.OpenWrite(outputPath)))
+                        {
+                            await streamWriter.WriteAsync(data.content);
+                        }
+
+                        Console.WriteLine($"{className}.cs");
+                        genClassContent.Add(data.content);
+                    }
+                }
             }
 
             return genClassContent;

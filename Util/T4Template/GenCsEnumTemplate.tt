@@ -1,0 +1,18 @@
+<#@ template language="C#" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ parameter name="className" type="string"#>
+<#@ parameter name="enumNames" type="string"#>
+<#@ parameter name="genFileTime" type="string"#>
+<#@ import namespace="System.Linq" #>
+<#
+    List<string> EnumNames = (enumNames as string).Split(';').ToList();
+#>
+///程序生成文件,请勿自行更改!!!
+///文件生成时间-<#=genFileTime#>
+using System.Collections.Generic;
+public enum <#=className #>{
+<#for(int i=0;i<EnumNames.Count;i++){#>
+    <#= EnumNames[i]#> = <#= i+1#>,
+<#}#>
+}

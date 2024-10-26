@@ -44,7 +44,9 @@ namespace Util
 
                 List<CsGenerator.ExcelCell> fileNames = new List<CsGenerator.ExcelCell>();
                 List<CsGenerator.ExcelCell> fileTypes = new List<CsGenerator.ExcelCell>();
-                ExcelUtil.GetFileNameAndFileType(workSheet, fileNames, fileTypes);
+                List<CsGenerator.ExcelCell> orNames = new List<CsGenerator.ExcelCell>();
+                List<CsGenerator.ExcelCell> orTypes = new List<CsGenerator.ExcelCell>();
+                ExcelUtil.GetFileNameAndFileType(workSheet, fileNames, fileTypes,orNames,orTypes);
                 foreach (var cell in fileNames)
                 {
                     propertyInfos.Add(cell.Col, type.GetProperty(fileNames[cell.Col - 1].Content));
@@ -55,11 +57,38 @@ namespace Util
                 for (int row = 5; row <= workSheet.Dimension.Rows; row++)
                 {
                     var @target = Activator.CreateInstance(type);
+                    if (workSheet.Cells[row,1].Value==null)
+                    {
+                        continue;
+                    }
                     foreach (var cell in fileNames)
                     {
-                        propertyInfos[cell.Col].SetValue(@target,
-                            Convert.ChangeType(workSheet.Cells[row, cell.Col].Value,
-                                MapStringToMap(propertyTypeInfos[cell.Col])));
+                        if (propertyInfos[cell.Col].PropertyType.IsEnum)
+                        {
+                            object enumType = Enum.Parse(assembly.GetType(propertyTypeInfos[cell.Col]), workSheet.Cells[row, cell.Col].Value.ToString());
+                            propertyInfos[cell.Col].SetValue(@target,enumType);   
+                        }
+                        else
+                        {
+                            //如果单元格值为空
+                            if (workSheet.Cells[row, cell.Col].Value!=null)
+                            {
+                                propertyInfos[cell.Col].SetValue(@target,
+                                    Convert.ChangeType(workSheet.Cells[row, cell.Col].Value,
+                                        MapStringToMap(propertyTypeInfos[cell.Col])));
+                            }
+                            else
+                            {
+                                //尝试使用默认值
+                                if (workSheet.Cells[4, cell.Col].Value!=null)
+                                {
+                                    propertyInfos[cell.Col].SetValue(@target,
+                                        Convert.ChangeType(workSheet.Cells[4, cell.Col].Value,
+                                            MapStringToMap(propertyTypeInfos[cell.Col])));
+                                }
+                            }
+
+                        }
                     }
 
                     serializeList.Add(@target);
