@@ -3,18 +3,21 @@
     "ID": "1",
     "CityName": "北京",
     "CityPop": 40000000,
-    "CityType": 0
+    "CityType": 0,
+    "Name": 1
   },
   {
     "ID": "2",
     "CityName": "上海",
     "CityPop": 60000000,
-    "CityType": 1
+    "CityType": 1,
+    "Name": 2
   },
   {
     "ID": "3",
     "CityName": "默认值",
     "CityPop": 1,
-    "CityType": 1
+    "CityType": 1,
+    "Name": 3
   }
 ]

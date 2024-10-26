@@ -19,9 +19,10 @@ namespace Util
 
         public void GenJsonText(List<string> csScripts)
         {
-            Console.WriteLine("Compiler cs files");
+            Console.WriteLine();
+            Console.WriteLine("------Compiling start------");
             Assembly assembly = ExcelUtil.CompilerCs(csScripts);
-            Console.WriteLine("End Compiler");
+            Console.WriteLine("------Compiling end------");
             GenJsonText(assembly);
         }
 
@@ -49,8 +50,8 @@ namespace Util
                 ExcelUtil.GetFileNameAndFileType(workSheet, fileNames, fileTypes,orNames,orTypes);
                 foreach (var cell in fileNames)
                 {
-                    propertyInfos.Add(cell.Col, type.GetProperty(fileNames[cell.Col - 1].Content));
-                    propertyTypeInfos.Add(cell.Col, fileTypes[cell.Col - 1].Content);
+                    propertyInfos.Add(cell.Col, type.GetProperty(cell.Content));
+                    propertyTypeInfos.Add(cell.Col, workSheet.Cells[3,cell.Col].Value.ToString());
                 }
 
                 ArrayList serializeList = new ArrayList();

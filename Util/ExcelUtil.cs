@@ -103,7 +103,7 @@ namespace Util
                 orTypes.Add(new CsGenerator.ExcelCell(1, col, workSheet.Cells[3, col].Value.ToString()));
                 if (propertyName.EndsWith("@pass") || propertyName.EndsWith("@pm"))
                 {
-                    return;
+                    continue;
                 }
 
                 if (propertyName.Contains("@enum"))
